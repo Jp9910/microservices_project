@@ -18,13 +18,15 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use('/public',express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 // app.use(express.static('public')) // static file served on route: http://localhost:3000/images/aurelioncoffee.jpg
 // app.use('/static', express.static('public')) // static file served on route: http://localhost:3000/static/images/aurelioncoffee.jpg
 app.use('/carrinho', carrinhoRouter);
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
