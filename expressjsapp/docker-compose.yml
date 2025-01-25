@@ -1,0 +1,22 @@
+# version: '3.7'
+
+services:
+  carrinho:
+    image: carrinho
+    build: .
+    ports:
+      - "80:3000" # vou acessar localhost:80, que vai se conectar em carrinho:3000
+    volumes:
+      - ./:/home/node/app
+
+  db:
+    image: mysql
+    ports:
+      - "8081:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "password"
+    volumes:
+      - mysql_data_carrinho:/var/lib/mysql
+
+volumes:
+  mysql_data_carrinho:
