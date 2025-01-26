@@ -5,7 +5,7 @@ services:
     image: carrinho
     build: .
     ports:
-      - "80:3000" # vou acessar localhost:80, que vai se conectar em carrinho:3000
+      - "3000:3000" 
     volumes:
       - ./:/home/node/app
     depends_on:
@@ -14,12 +14,18 @@ services:
   db:
     image: mysql
     ports:
-      - "8081:3306"
+      - "8081:3306" # vou acessar localhost:8081, que vai se conectar em db:3006
     environment:
       MYSQL_ROOT_PASSWORD: "password"
-      MYSQL_DATABASE: "carrinho"
+      MYSQL_DATABASE: "example"
     volumes:
       - mysql_data_carrinho:/var/lib/mysql
 
 volumes:
   mysql_data_carrinho:
+
+
+# mudar para o mariadb
+# testar conexão usando um botão no front
+# Separar front e back do carrinho? não tem necessidade
+# Separar front e back da loja? também não precisa, mas seria interessante

@@ -1,0 +1,3 @@
+[submodule "carrinho"]
+	path = carrinho
+	url = https://github.com/Jp9910/microsservico-carrinho.git

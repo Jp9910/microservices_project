@@ -7,13 +7,16 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var carrinhoRouter = require('./routes/carrinho');
+var testarBDRouter = require('./routes/testarBD');
 
 var app = express();
 
-testarBD();
+// testarBD();
+console.log(3)
+console.log(12)
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, 'public/views'));
 app.set('view engine', 'pug');
 
 app.use(logger('dev'));
@@ -24,9 +27,8 @@ app.use('/public',express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-// app.use(express.static('public')) // static file served on route: http://localhost:3000/images/aurelioncoffee.jpg
-// app.use('/static', express.static('public')) // static file served on route: http://localhost:3000/static/images/aurelioncoffee.jpg
 app.use('/carrinho', carrinhoRouter);
+app.use('/testarBD', testarBDRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -44,24 +46,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-function testarBD() {
-    console.log("Testar BD")
-    const mysql = require('mysql')
-    const connection = mysql.createConnection({
-        host: 'db',
-        user: 'root',
-        password: 'password',
-        database: 'carrinho'
-    })
-    connection.connect()
-    connection.query('SELECT 1 + 1 AS solution', (err, rows, fields) => {
-        if (err) throw err
-        
-        console.log('The solution is: ', rows[0].solution)
-    })
-    connection.end()
-    console.log("BD Testado")
-}
-
-module.exports = testarBD;
 module.exports = app;

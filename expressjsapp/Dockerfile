@@ -18,4 +18,5 @@ COPY --chown=node:node ./ ./
 EXPOSE 3000
 
 CMD [ "yarn", "dev" ]
+# CMD [ "npm", "run", "dev" ]
 # CMD [ "node", "app.js" ]
