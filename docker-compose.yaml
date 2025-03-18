@@ -4,28 +4,20 @@ services:
 
 # Frontends
   front-cliente:
-    image: node:20-alpine
+    image: jp9910/microsservico-front-cliente:main
     container_name: front-cliente
-    volumes:
-      - ./:/app/
-    working_dir: /app
-    command: >
-      sh -c "npm install &&
-             npm run dev -- --host"
     ports:
-      - "5173:5173" # caso o api gateway seja configurado a tempo, apenas a porta 80 dele precisaria ser bindada com o host, e as portas dos containers dos microsserviços não precisariam, bastando ser expostas (em vez de bindadas).
+      - "5173:80" # caso o api gateway seja configurado a tempo, apenas a porta 80 dele precisaria ser bindada com o host, e as portas dos containers dos microsserviços não precisariam, bastando ser expostas (em vez de bindadas).
     depends_on:
       - gateway
     networks:
       - front
 
   front-administracao:
-    image: jp9910/microsservico-front-administracao
+    image: jp9910/microsservico-front-administracao:main
     container_name: front-adm
-    volumes:
-      - ./src/:/app/src/
     ports:
-      - "4200:4200"
+      - "4200:80"
     depends_on:
       - gateway
     networks:
@@ -164,8 +156,8 @@ services:
   prometheus-auth:
     image: prom/prometheus:latest
     volumes:
+      - prometheus-data:/prometheus
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./prometheus/prometheus_data:/prometheus
     command:
       # Arquivo de configuração do prometheus
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -188,7 +180,7 @@ services:
   grafana-auth:
     image: grafana/grafana # https://grafana.com/docs/grafana/latest/setup-grafana/configure-docker/
     volumes:
-      - ./grafana:/var/lib/grafana
+      - grafana-data:/var/lib/grafana
     ports:
       - 9091:3000
     depends_on:
@@ -207,14 +199,14 @@ services:
       - monit
 
 # Simulação de um consumidor do microsserviço de autenticação, pra poderem ser vistos alguns dados no grafana
-  simulacao-consumidor:
-    build:
-      context: ./simulacao_consumidor_api/
-      dockerfile: Dockerfile
-    image: simulacao-consumidor
-    depends_on:
-      - api-autenticacao
-      - grafana-auth
+  # simulacao-consumidor:
+  #   build:
+  #     context: ./simulacao_consumidor_api/
+  #     dockerfile: Dockerfile
+  #   image: simulacao-consumidor
+  #   depends_on:
+  #     - api-autenticacao
+  #     - grafana-auth
 
 # INTERFACE DE GERENCIAMENTO DO POSTGRESQL
   # pgadmin:
@@ -231,12 +223,14 @@ services:
 volumes:
   postgresauth-data:
   postgresloja-data:
+  grafana-data:
+  prometheus-data:
 
 secrets:
   senha-postgres-auth:
-    file: ./.senhapostgresauth.txt
+    file: ./.senhapostgresauth.env
   senha-postgres-loja:
-    file: ./.senhapostgresloja.txt
+    file: ./.senhapostgresloja.env
 
 networks:
   front:
