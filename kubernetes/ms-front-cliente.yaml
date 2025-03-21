@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-front-cliente
+  labels:
+    app: ms-front-cliente
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-front-cliente
+  template:
+    metadata:
+      labels:
+        app: ms-front-cliente
+    spec:
+      containers:
+      - name: cntnr-ms-front-cliente
+        image: jp9910/microsservico-front-cliente:main
+        ports:
+        # specifies which port inside the container is intended to receive traffic. 
+        # However, it is primarily informational and does not actually expose the port by itself.
+        - containerPort: 80 # (porta do nginx)

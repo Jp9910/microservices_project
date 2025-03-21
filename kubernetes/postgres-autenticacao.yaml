@@ -1,20 +1,4 @@
 apiVersion: v1
-kind: Service
-metadata:
-  name: svc-postgres-autenticacao
-  labels:
-    app: postgres-autenticacao
-spec:
-  # clusterIP: None
-  type: ClusterIP
-  ports:
-  - port: 5432
-    name: port-postgres-autenticacao
-  selector:
-    app: postgres-autenticacao
----
-
-apiVersion: v1
 kind: ConfigMap
 metadata:
   name: configmap-postgres-autenticacao
@@ -26,7 +10,7 @@ data:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-postgres
+  name: pvc-postgres-autenticacao
 spec:
   accessModes:
     - ReadWriteOnce
@@ -90,4 +74,4 @@ spec:
       volumes:
         - name: postgres-pv
           persistentVolumeClaim:
-            claimName: pvc-postgres
+            claimName: pvc-postgres-autenticacao
