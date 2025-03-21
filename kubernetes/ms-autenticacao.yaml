@@ -3,8 +3,8 @@ kind: ConfigMap
 metadata:
   name: configmap-ms-autenticacao
 data:
+  SPRING_ACTIVE_PROFILE: prod
   SPRING_DATASOURCE_URL: "jdbc:postgresql://svc-postgres-autenticacao:5432/autenticacao"
-  SPRING_ACTIVE_PROFILE: dev
   URL_LOKI: http://svc-loki:3100
 ---
 
@@ -32,3 +32,24 @@ spec:
         envFrom:
           - configMapRef:
               name: configmap-ms-autenticacao
+        env:
+          - name: SPRING_DATASOURCE_USERNAME
+            valueFrom:
+              configMapKeyRef:
+                name: configmap-postgres-autenticacao
+                key: USUARIO_POSTGRES
+          - name: SPRING_DATASOURCE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: senhas
+                key: SENHA_POSTGRES_AUTENTICACAO
+          - name: POSTGRES_DB
+            valueFrom:
+              configMapKeyRef:
+                name: configmap-postgres-autenticacao
+                key: NOME_DATABASE_PADRAO
+          - name: SENHA_ASSINATURA_JWT
+            valueFrom:
+              secretKeyRef:
+                name: senhas
+                key: SENHA_ASSINATURA_JWT_AUTENTICACAO

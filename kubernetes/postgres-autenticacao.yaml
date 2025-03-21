@@ -17,7 +17,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: configmap-postgres
+  name: configmap-postgres-autenticacao
 data:
   NOME_DATABASE_PADRAO: autenticacao
   USUARIO_POSTGRES: postgres
@@ -69,24 +69,24 @@ spec:
             - name: postgres-pv
               mountPath: /var/lib/postgresql/data
           env:
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-postgres-autenticacao
+                  key: USUARIO_POSTGRES
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: senhas
-                  key: SENHA_POSTGRES
+                  key: SENHA_POSTGRES_AUTENTICACAO
             - name: POSTGRES_DB
               valueFrom:
                 configMapKeyRef:
-                  name: configmap-postgres
+                  name: configmap-postgres-autenticacao
                   key: NOME_DATABASE_PADRAO
-            - name: POSTGRES_USER
-              valueFrom:
-                configMapKeyRef:
-                  name: configmap-postgres
-                  key: USUARIO_POSTGRES
           # envFrom:
           #   - configMapRef:
-          #       name: configmap-postgres
+          #       name: configmap-postgres-autenticacao
       volumes:
         - name: postgres-pv
           persistentVolumeClaim:
