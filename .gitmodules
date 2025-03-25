@@ -1,3 +1,6 @@
 [submodule "carrinho"]
 	path = carrinho
 	url = https://github.com/Jp9910/microsservico-carrinho.git
+[submodule "microsservico-autenticacao"]
+	path = microsservico-autenticacao
+	url = https://github.com/Jp9910/microsservico-autenticacao.git
