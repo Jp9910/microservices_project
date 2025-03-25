@@ -1,6 +1,18 @@
-[submodule "carrinho"]
-	path = carrinho
-	url = https://github.com/Jp9910/microsservico-carrinho.git
-[submodule "microsservico-autenticacao"]
-	path = microsservico-autenticacao
+[submodule "ms-usuarios"]
+	path = ms-usuarios
 	url = https://github.com/Jp9910/microsservico-autenticacao.git
+[submodule "ms-loja"]
+	path = ms-loja
+	url = https://github.com/Jp9910/microsservico-api-loja.git
+[submodule "ms-carrinho"]
+	path = ms-carrinho
+	url = https://github.com/Jp9910/microsservico-carrinho.git
+[submodule "ms-financeiro"]
+	path = ms-financeiro
+	url = https://github.com/Jp9910/microsservico-financeiro.git
+[submodule "ms-front-cliente"]
+	path = ms-front-cliente
+	url = https://github.com/Jp9910/microsservico-frontend.git
+[submodule "ms-front-administracao"]
+	path = ms-front-administracao
+	url = https://github.com/Jp9910/microsservico-front-admininstracao.git
