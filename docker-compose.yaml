@@ -196,15 +196,17 @@ services:
     networks:
       - monit
 
-# Simulação de um consumidor do microsserviço de autenticação, pra poderem ser vistos alguns dados no grafana
-  # simulacao-consumidor:
-  #   build:
-  #     context: ./simulacao_consumidor_api/
-  #     dockerfile: Dockerfile
-  #   image: simulacao-consumidor
-  #   depends_on:
-  #     - api-autenticacao
-  #     - grafana-auth
+# # Simulação de um consumidor do microsserviço de autenticação, pra poderem ser vistos alguns dados no grafana
+  simulacao-consumidor:
+    build:
+      context: ./simulacao_consumidor_api/
+      dockerfile: Dockerfile
+    image: simulacao-consumidor
+    depends_on:
+      - api-autenticacao
+      - grafana-auth
+    networks:
+      - back
 
 # INTERFACE DE GERENCIAMENTO DO POSTGRESQL
   # pgadmin:

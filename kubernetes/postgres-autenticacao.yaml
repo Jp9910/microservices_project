@@ -5,6 +5,11 @@ metadata:
 data:
   NOME_DATABASE_PADRAO: autenticacao
   USUARIO_POSTGRES: postgres
+  
+  # Exemplo de variável de ambiente com 2 valores, para acessar 2 réplicas de um serviço
+  # SERVER_HOST: "http://server-0.server:8081/eureka,http://server-1.server:8081/eureka"
+  # Foi usado no Spring, mas talvez funciona pra outros frameworks também?
+  # Pode ser usado para quando há 2 bancos?
 ---
 
 apiVersion: v1
@@ -42,6 +47,7 @@ spec:
       labels:
         app: postgres-autenticacao
     spec:
+      # hostname: bd-postgres-autenticacao # nome do pod. não é necessário, o k8s já gera um nome e faz o dns automaticamente
       terminationGracePeriodSeconds: 10
       containers:
         - name: cntnr-postgres-autenticacao
