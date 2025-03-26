@@ -126,6 +126,8 @@ services:
 
   mongo-carrinho:
     image: mongo
+    volumes:
+      - mongo-data:/data/db
     environment:
       MONGO_INITDB_ROOT_USERNAME: carrinho-usuario
       MONGO_INITDB_ROOT_PASSWORD: carrinho-senha
@@ -258,6 +260,7 @@ volumes:
   postgresloja-data:
   grafana-data:
   prometheus-data:
+  mongo-data:
 
 networks:
   front:

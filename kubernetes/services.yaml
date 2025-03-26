@@ -137,3 +137,34 @@ spec:
   selector:
     app: rabbitmq
 ---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-carrinho # !! esse deve ser o nome que o nginx api-gateway está configurado para redirecionar para !!
+  labels:
+    app: ms-carrinho
+spec:
+  type: ClusterIP # Acessível apenas dentro do cluster
+  ports:
+  - port: 3000 # The port other deployments will use to connect (!!deve ser a porta para onde o api-gateway vai redirecionar!!)
+    targetPort: 3000 # The container port inside the Pods
+  selector:
+    app: ms-carrinho
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-mongo-carrinho
+  labels:
+    app: mongo-carrinho
+spec:
+  clusterIP: None # Other services can directly discover and communicate with individual Pods. Melhor para statefulsets, comumente DBs
+  # type: ClusterIP
+  ports:
+  - port: 27017
+    name: port-mongo-carrinho
+  selector:
+    app: mongo-carrinho
+---

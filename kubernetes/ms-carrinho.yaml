@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-ms-carrinho
+data:
+  db_location: local # "local" ou "atlas"
+  local_db_username: carrinho-usuario
+  local_db_container_name: svc-mongo-carrinho
+  RABBITMQ_HOST: svc-rabbitmq
+  RABBITMQ_PORT: "5672"
+  RABBITMQ_USERNAME: "jops40"
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-carrinho
+  labels:
+    app: ms-carrinho
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-carrinho
+  template:
+    metadata:
+      labels:
+        app: ms-carrinho
+    spec:
+      containers:
+      - name: ms-carrinho
+        image: jp9910/microsservico-carrinho:main
+        args: ["npm install && npm run dev"]
+        ports:
+        - containerPort: 3000 # specifies which port inside the container is intended to receive traffic. However, it is primarily informational and does not actually expose the port by itself.
+        envFrom:
+          - configMapRef:
+              name: configmap-ms-carrinho
+        env:
+          - name: local_db_password
+            valueFrom:
+              secretKeyRef:
+                name: senhas
+                key: PASSWORD_MONGO_CARRINHO
+          - name: RABBITMQ_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: senhas
+                key: RABBITMQ_PASSWORD

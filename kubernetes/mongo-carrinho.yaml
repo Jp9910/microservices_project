@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-mongo-carrinho
+data:
+  USUARIO_MONGO: carrinho-usuario
+  NOME_DATABASE_PADRAO: microsservico-carrinho
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-mongo-carrinho
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 4Gi
+  # >Se o storageClassName não for definido, será usado o storage class padrão (acho que se chama standard)
+  # storageClassName: standard
+  
+  # >Utilizando o csi-hostpath-sc como a storage class name, temos todas as vantagens de utilizar uma interface
+  # >única para armazenamento, independente de ambiente;
+  # minikube addons enable csi-hostpath-driver
+  # storageClassName: csi-hostpath-sc
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ss-mongo-carrinho
+spec:
+  selector:
+    matchLabels:
+      app: mongo-carrinho
+  serviceName: svc-mongo-carrinho
+  replicas: 1
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        app: mongo-carrinho
+    spec:
+      # hostname: bd-mongo-carrinho # nome do pod. não é necessário, o k8s já gera um nome e faz o dns automaticamente
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: cntnr-mongo-carrinho
+          image: mongo:4.4.29
+          ports:
+            - containerPort: 27017
+              name: port-mongo
+          volumeMounts:
+            - name: mongo-pv
+              mountPath: /data/db
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-mongo-carrinho
+                  key: USUARIO_MONGO
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: senhas
+                  key: PASSWORD_MONGO_CARRINHO
+            - name: MONGO_INITDB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-mongo-carrinho
+                  key: NOME_DATABASE_PADRAO
+      volumes:
+        - name: mongo-pv
+          persistentVolumeClaim:
+            claimName: pvc-mongo-carrinho

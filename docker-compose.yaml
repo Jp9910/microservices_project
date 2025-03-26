@@ -105,6 +105,8 @@ services:
 
   mongo-carrinho:
     image: mongo
+    volumes:
+      - mongo-data:/data/db
     env_file: ".mongo-container.env"
     networks:
       - back
@@ -235,6 +237,7 @@ volumes:
   postgresloja-data:
   grafana-data:
   prometheus-data:
+  mongo-data:
 
 secrets:
   senha-postgres-auth:
