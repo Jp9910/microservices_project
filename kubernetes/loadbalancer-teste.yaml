@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: loadbalancer-eureka
+  name: loadbalancer-autenticacao
 spec:
   ports:
   - port: 8081
@@ -12,3 +12,16 @@ spec:
 
 # Com o loadbalancer iniciado, pode-se usar um tunnel para acessar a aplicação para quem o loadbalancer
 # faz o balanceamento, por meio do comando `minikube tunnel --bind-address=<ipDaMaquinaLocal>`
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: loadbalancer-loja
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: ms-loja
+  type: LoadBalancer

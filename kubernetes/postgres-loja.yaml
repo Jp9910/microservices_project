@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-postgres-loja
+data:
+  NOME_DATABASE_PADRAO: loja
+  USUARIO_POSTGRES: postgres
+
+  # Exemplo de variável de ambiente com 2 valores, para acessar 2 réplicas de um serviço
+  # SERVER_HOST: "http://server-0.server:8081/eureka,http://server-1.server:8081/eureka"
+  # Foi usado no Spring, mas talvez funciona pra outros frameworks também?
+  # Pode ser usado para quando há 2 bancos?
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-postgres-loja
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+  # >Se o storageClassName não for definido, será usado o storage class padrão (acho que se chama standard)
+  # storageClassName: standard
+  
+  # >Utilizando o csi-hostpath-sc como a storage class name, temos todas as vantagens de utilizar uma interface
+  # >única para armazenamento, independente de ambiente;
+  # minikube addons enable csi-hostpath-driver
+  # storageClassName: csi-hostpath-sc
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ss-postgres-loja
+spec:
+  selector:
+    matchLabels:
+      app: postgres-loja
+  serviceName: svc-postgres-loja
+  replicas: 1
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        app: postgres-loja
+    spec:
+      # hostname: bd-postgres-loja # nome do pod. não é necessário, o k8s já gera um nome e faz o dns automaticamente
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: cntnr-postgres-loja
+          image: postgres:17
+          ports:
+            - containerPort: 5432
+              name: port-postgres
+          volumeMounts:
+            - name: postgres-pv
+              mountPath: /var/lib/postgresql/data
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-postgres-loja
+                  key: USUARIO_POSTGRES
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: senhas
+                  key: SENHA_POSTGRES_LOJA
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-postgres-loja
+                  key: NOME_DATABASE_PADRAO
+          # envFrom:
+          #   - configMapRef:
+          #       name: configmap-postgres-loja
+      volumes:
+        - name: postgres-pv
+          persistentVolumeClaim:
+            claimName: pvc-postgres-loja

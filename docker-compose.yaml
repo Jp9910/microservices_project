@@ -93,6 +93,16 @@ services:
       - back
 
 # BANCOS DE DADOS
+
+  memcached:
+    image: memcached:1.6
+    ports:
+      - "11211:11211"
+    command:
+      - --conn-limit=1024
+      - --memory-limit=64
+      - --threads=4
+
   mongo-carrinho:
     image: mongo
     env_file: ".mongo-container.env"

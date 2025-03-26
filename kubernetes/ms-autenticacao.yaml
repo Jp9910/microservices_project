@@ -24,6 +24,7 @@ spec:
       labels:
         app: ms-autenticacao
     spec:
+      # hostname: ms-autenticacao-hostname # nome do pod
       containers:
       - name: ms-autenticacao
         image: jp9910/microsservico-autenticacao:main

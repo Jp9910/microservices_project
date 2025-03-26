@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ss-memcached
+spec:
+  selector:
+    matchLabels:
+      app: memcached
+  serviceName: svc-memcached
+  replicas: 1
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        app: memcached
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: cntnr-memcached
+          image: memcached:1.6
+          # command: ["memcached"] # esse é o ultimo comando que já é rodado pela imagem original
+          args: ["--conn-limit=1024","--memory-limit=64","--threads=4"]
+          ports:
+            - containerPort: 11211
+              name: port-memcached

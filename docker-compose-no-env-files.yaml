@@ -114,6 +114,16 @@ services:
       - back
 
 # BANCOS DE DADOS
+
+  memcached:
+    image: memcached:1.6
+    ports:
+      - "11211:11211"
+    command:
+      - --conn-limit=1024
+      - --memory-limit=64
+      - --threads=4
+
   mongo-carrinho:
     image: mongo
     environment:
@@ -220,14 +230,16 @@ services:
       - monit
 
 # Simulação de um consumidor do microsserviço de autenticação, pra poderem ser vistos alguns dados no grafana
-  # simulacao-consumidor:
-  #   build:
-  #     context: ./simulacao_consumidor_api/
-  #     dockerfile: Dockerfile
-  #   image: simulacao-consumidor
-  #   depends_on:
-  #     - api-autenticacao
-  #     - grafana-auth
+  simulacao-consumidor:
+    build:
+      context: ./simulacao_consumidor_api/
+      dockerfile: Dockerfile
+    image: simulacao-consumidor
+    depends_on:
+      - api-autenticacao
+      - grafana-auth
+    networks:
+      - back
 
 # INTERFACE DE GERENCIAMENTO DO POSTGRESQL
   # pgadmin:

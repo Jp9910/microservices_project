@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ss-rabbitmq
+spec:
+  selector:
+    matchLabels:
+      app: rabbitmq
+  serviceName: svc-rabbitmq
+  replicas: 1
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: cntnr-rabbitmq
+          image: rabbitmq:3.13
+          ports:
+            - containerPort: 5672
+              name: port-rabbitmq
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              value: "jops40"
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: senhas
+                  key: RABBITMQ_PASSWORD

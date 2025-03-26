@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-ms-loja
+data:
+  RABBITMQ_HOST: svc-rabbitmq
+  RABBITMQ_PORT: "5672"
+  RABBITMQ_USERNAME: "jops40"
+  MEMCACHED_ADDRESS: "svc-memcached"
+  MEMCACHED_PORT: "11211"
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-loja
+  labels:
+    app: ms-loja
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-loja
+  template:
+    metadata:
+      labels:
+        app: ms-loja
+    spec:
+      containers:
+      - name: ms-loja
+        image: jp9910/microsservico-loja:main
+        command: ["sh","./entrypoint-loja.sh"] # executar migrations e depois iniciar dll
+        ports:
+        - containerPort: 8080 # specifies which port inside the container is intended to receive traffic. However, it is primarily informational and does not actually expose the port by itself.
+        envFrom:
+          - configMapRef:
+              name: configmap-ms-loja
+        env:
+          - name: DBConnectionString
+            valueFrom:
+              secretKeyRef:
+                name: senhas
+                key: DB_CONNECTION_STRING_LOJA
+          - name: RABBITMQ_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: senhas
+                key: RABBITMQ_PASSWORD
