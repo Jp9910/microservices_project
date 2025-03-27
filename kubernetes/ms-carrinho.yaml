@@ -30,7 +30,7 @@ spec:
       containers:
       - name: ms-carrinho
         image: jp9910/microsservico-carrinho:main
-        args: ["npm install && npm run dev"]
+        args: ["npm install && npm run start"]
         ports:
         - containerPort: 3000 # specifies which port inside the container is intended to receive traffic. However, it is primarily informational and does not actually expose the port by itself.
         envFrom:

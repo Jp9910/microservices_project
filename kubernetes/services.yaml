@@ -183,3 +183,6 @@ spec:
   selector:
     app: mongo-carrinho
 ---
+
+# O financeiro não precisa de serviço pq não tem api, só se comunica com o rabbitmq
+---

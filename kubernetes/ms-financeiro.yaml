@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-ms-financeiro
+data:
+  RABBITMQ_HOST: svc-rabbitmq
+  RABBITMQ_PORT: "5672"
+  RABBITMQ_USERNAME: "jops40"
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-financeiro
+  labels:
+    app: ms-financeiro
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-financeiro
+  template:
+    metadata:
+      labels:
+        app: ms-financeiro
+    spec:
+      containers:
+      - name: ms-financeiro
+        image: jp9910/microsservico-financeiro:main
+        args: ["yarn install && yarn start"]
+        ports:
+        - containerPort: 3001 # specifies which port inside the container is intended to receive traffic. However, it is primarily informational and does not actually expose the port by itself.
+        envFrom:
+          - configMapRef:
+              name: configmap-ms-financeiro
+        env:
+          - name: RABBITMQ_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: senhas
+                key: RABBITMQ_PASSWORD
