@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-front-admin
+  labels:
+    app: ms-front-admin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-front-admin
+  template:
+    metadata:
+      labels:
+        app: ms-front-admin
+    spec:
+      containers:
+      - name: cntnr-ms-front-admin
+        image: jp9910/microsservico-front-administracao:main
+        # imagePullPolicy: Always # buscar a imagem ao iniciar
+        ports:
+        # specifies which port inside the container is intended to receive traffic. 
+        # However, it is primarily informational and does not actually expose the port by itself.
+        - containerPort: 80 # (porta do nginx)

@@ -29,7 +29,7 @@ spec:
       containers:
       - name: ms-loja
         image: jp9910/microsservico-loja:main
-        command: ["sh","./entrypoint-loja.sh"] # executar migrations e depois iniciar dll
+        # command: ["sh","./entrypoint-loja.sh"] # executar migrations e depois iniciar dll
         ports:
         - containerPort: 8080 # specifies which port inside the container is intended to receive traffic. However, it is primarily informational and does not actually expose the port by itself.
         envFrom:

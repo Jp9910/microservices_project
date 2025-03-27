@@ -48,7 +48,7 @@ services:
       - "8079:8079"
       - "8080:8080"
     env_file: ".env.api-loja"
-    command: sh ./entrypoint-loja.sh
+    # command: sh ./entrypoint-loja.sh
     volumes:
       - ./:/src
     depends_on:
