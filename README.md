@@ -13,7 +13,9 @@ Acessar `localhost:5173` em um navegador.
 - Acessar `localhost:9091` e entrar com o usuário `admin` e senha `admin`. Pode pular a troca de senha em seguida.
 
 - Adicionar fonte de dados:
-    No menu lateral, ir em Data Sources. No canto superior direito, clicar em `Add New Data Source`, selecionar `Prometheus`, e no campo Connection, digitar `http://prometheus-auth:9090`, em seguida rolar para baixo e clicar em `Save & Test`
+    No menu lateral, ir em Data Sources. No canto superior direito, clicar em `Add New Data Source`, selecionar `Prometheus`, e no campo Connection, digitar `http://prometheus-auth:9090`, em seguida rolar para baixo e clicar em `Save & Test`.
+
+    No menu lateral, ir em Data Sources. No canto superior direito, clicar em `Add New Data Source`, selecionar `Loki`, e no campo Connection, digitar `http://loki-auth:3100`, em seguida rolar para baixo e clicar em `Save & Test`.
 
 - Importar dashboard:
     No menu lateral, ir em `Dashboards`. No canto superior direito, Clicar no botão `New > Import`. Colar o conteúdo do arquivo `grafana/dashboard-template-another-instance.json` na caixa de texto `import via dashboard JSON model` e clicar em `Load`. Selecionar a fonte de dados Prometheus (configurada no passo acima) e em seguida clicar em `Import`.

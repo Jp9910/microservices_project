@@ -1,0 +1,203 @@
+# prometheus, grafana, loki
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-monitoramento
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+data:
+  prometheus.yml: |-
+    global:
+      scrape_interval: 5s
+    scrape_configs:
+      # job de monitorar ele mesmo
+      - job_name: svc-prometheus
+        scrape_interval: 15s
+        scrape_timeout: 10s
+        metrics_path: /metrics
+        scheme: http
+        static_configs:
+        - targets:
+          - svc-prometheus:9090
+
+      # job de monitorar a api de autenticacao
+      - job_name: api-autenticacao
+        metrics_path: /actuator/prometheus
+        static_configs:
+        - targets:
+          - api-autenticacao:8081
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ss-prometheus
+spec:
+  selector:
+    matchLabels:
+      app: prometheus
+  serviceName: svc-prometheus
+  replicas: 1
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: cntnr-prometheus
+          image: prom/prometheus:latest
+          args: [
+            "--config.file=/etc/prometheus/prometheus.yml", 
+            "--storage.tsdb.path=/prometheus", 
+            "--web.console.libraries=/etc/prometheus/console_libraries", 
+            "--web.console.templates=/etc/prometheus/consoles", 
+            "--web.enable-lifecycle"
+          ]
+          ports:
+            - containerPort: 9090
+              name: port-prometheus
+          volumeMounts:
+            - name: prometheus-data
+              mountPath: /prometheus
+            - name: prometheus-config
+              mountPath: /etc/prometheus/prometheus.yml
+              subPath: prometheus.yml
+      volumes:
+        - name: prometheus-config
+          configMap:
+            name: prometheus-config
+        - name: prometheus-data
+          persistentVolumeClaim:
+            claimName: pvc-monitoramento
+  # volumeClaimTemplates:
+  #   - metadata:
+  #       name: prometheus-data
+  #     spec:
+  #       accessModes: ["ReadWriteOnce"]
+  #       storageClassName: standard
+  #       resources:
+  #         requests:
+  #           storage: 4Gi
+    
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ss-loki
+spec:
+  selector:
+    matchLabels:
+      app: loki
+  serviceName: svc-loki
+  replicas: 1
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        app: loki
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: cntnr-loki
+          image: grafana/loki
+          args: [
+            "-config.file=/etc/loki/local-config.yaml", 
+            "-print-config-stderr=true"
+          ]
+          ports:
+            - containerPort: 3100
+              name: port-loki
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - name: cntnr-grafana
+        image: grafana/grafana
+        ports:
+          - containerPort: 3000
+        volumeMounts:
+            - name: grafana-data
+              mountPath: /var/lib/grafana
+      volumes:
+        - name: grafana-data
+          persistentVolumeClaim:
+            claimName: pvc-monitoramento
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-prometheus
+  labels:
+    app: prometheus
+spec:
+  clusterIP: None # Other services can directly discover and communicate with individual Pods. Melhor para statefulsets, comumente DBs
+  # type: ClusterIP
+  ports:
+  - port: 9090
+    name: port-prometheus
+  selector:
+    app: prometheus
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-loki
+  labels:
+    app: loki
+spec:
+  clusterIP: None # Other services can directly discover and communicate with individual Pods. Melhor para statefulsets, comumente DBs
+  # type: ClusterIP
+  ports:
+  - port: 9092
+    targetPort: 3100
+    name: port-loki
+  selector:
+    app: loki
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-grafana # !! esse deve ser o nome que o nginx api-gateway está configurado para redirecionar para !!
+  labels:
+    app: grafana
+spec:
+  type: ClusterIP # Acessível apenas dentro do cluster
+  ports:
+  - port: 9091
+    targetPort: 3000
+  selector:
+    app: ms-carrinho
+---

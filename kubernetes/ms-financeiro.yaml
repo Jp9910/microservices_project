@@ -27,6 +27,7 @@ spec:
       containers:
       - name: ms-financeiro
         image: jp9910/microsservico-financeiro:main
+        # imagePullPolicy: Always
         args: ["yarn install && yarn start"]
         ports:
         - containerPort: 3001 # specifies which port inside the container is intended to receive traffic. However, it is primarily informational and does not actually expose the port by itself.

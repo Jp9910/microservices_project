@@ -17,6 +17,7 @@ spec:
       containers:
       - name: cntnr-ms-front-cliente
         image: jp9910/microsservico-front-cliente:main
+        # imagePullPolicy: Always # buscar a imagem ao iniciar
         ports:
         # specifies which port inside the container is intended to receive traffic. 
         # However, it is primarily informational and does not actually expose the port by itself.
