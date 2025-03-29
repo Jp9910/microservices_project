@@ -1,13 +1,13 @@
-# E-Commerce com microsserviçosdock
+# Sistema web de E-Commerce em microsserviços
 
 ### Passos para executar a aplicação localmente
-- Baixar o `Docker` e o `docker-compose`
-- Executar o comando `docker-compose -f docker-compose-no-env-files.yaml up`
+- Baixar o `Docker` (https://docs.docker.com/engine/install/) e o `docker-compose` (https://docs.docker.com/compose/install/)
+- Executar o comando `docker-compose -f docker-compose-no-env-files.yaml up -d`
 
 (Pode levar alguns minutos caso seja a primeira vez pois muitas imagens serão baixadas)
 
 ### Usar a aplicação
-Acessar `localhost:80` em um navegador.
+Acessar `localhost:5173` em um navegador.
 
 ### Configurar os dashboards do Grafana:
 - Acessar `localhost:9091` e entrar com o usuário `admin` e senha `admin`. Pode pular a troca de senha em seguida.

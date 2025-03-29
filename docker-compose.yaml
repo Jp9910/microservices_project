@@ -25,11 +25,7 @@ services:
 
 # API Gateway
   gateway:
-    image: nginx:alpine
-    volumes:
-      - ./api-gateway/nginx.conf:/etc/nginx/nginx.conf
-      - ./api-gateway/proxy.conf:/etc/nginx/conf.d/proxy.conf
-      - ./api-gateway/default.conf:/etc/nginx/conf.d/default.conf
+    image: jp9910/nginx-gateway-microsservicos:main
     ports:
       - 80:80
     depends_on:
@@ -92,6 +88,23 @@ services:
     networks:
       - back
 
+  financeiro:
+    image: jp9910/microsservico-financeiro:main
+    command: >
+      "yarn install 
+      && yarn start"
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
+    ports:
+      - 3001:3000
+    depends_on:
+      - rabbitmq
+    networks:
+      - back
+
 # BANCOS DE DADOS
 
   memcached:
@@ -102,6 +115,8 @@ services:
       - --conn-limit=1024
       - --memory-limit=64
       - --threads=4
+    networks:
+      - back
 
   mongo-carrinho:
     image: mongo

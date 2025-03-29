@@ -6,7 +6,7 @@ services:
 
 # Frontends
   front-cliente:
-    image: jp9910/microsservico-front-cliente:main
+    image: jp9910/microsservico-front-cliente:main # as imagens upadas no dockerhub devem ter a config de prod ativada
     container_name: front-cliente
     ports:
       - "5173:80" # caso o api gateway seja configurado a tempo, apenas a porta 80 dele precisaria ser bindada com o host, e as portas dos containers dos microsserviços não precisariam, bastando ser expostas (em vez de bindadas).
@@ -16,7 +16,7 @@ services:
       - front
 
   front-administracao:
-    image: jp9910/microsservico-front-administracao:main
+    image: jp9910/microsservico-front-administracao:main # as imagens upadas no dockerhub devem ter a config de prod ativada
     container_name: front-adm
     ports:
       - "4200:80"
@@ -27,11 +27,7 @@ services:
 
 # API Gateway
   gateway:
-    image: nginx:alpine
-    volumes:
-      - ./api-gateway/nginx.conf:/etc/nginx/nginx.conf
-      - ./api-gateway/proxy.conf:/etc/nginx/conf.d/proxy.conf
-      - ./api-gateway/default.conf:/etc/nginx/conf.d/default.conf
+    image: jp9910/nginx-gateway-microsservicos:main
     ports:
       - 80:80
     depends_on:
@@ -58,6 +54,8 @@ services:
       RABBITMQ_PORT: 5672
       RABBITMQ_USERNAME: guest
       RABBITMQ_PASSWORD: guest
+      MEMCACHED_ADDRESS: "memcached"
+      MEMCACHED_PORT: "11211"
     command: sh ./entrypoint-loja.sh
     volumes:
       - ./:/src
@@ -113,6 +111,23 @@ services:
       - front
       - back
 
+  financeiro:
+    image: jp9910/microsservico-financeiro:main
+    command: >
+      "yarn install 
+      && yarn start"
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
+    ports:
+      - 3001:3000
+    depends_on:
+      - rabbitmq
+    networks:
+      - back
+
 # BANCOS DE DADOS
 
   memcached:
@@ -123,6 +138,8 @@ services:
       - --conn-limit=1024
       - --memory-limit=64
       - --threads=4
+    networks:
+      - back
 
   mongo-carrinho:
     image: mongo
